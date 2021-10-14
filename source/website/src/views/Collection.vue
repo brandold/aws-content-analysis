@@ -56,6 +56,21 @@
             </b-button>
           </b-col>
         </b-row>
+        <b-row
+          class="my-1"
+          align-v="center"
+          align-h="center"
+        >
+        <b-col>
+          <b-icon-filter v-b-toggle.collapse-1 id="expand">
+          </b-icon-filter>
+        </b-col>
+        <b-col>
+          <b-collapse id="collapse-1">
+            <b-card>Filters</b-card>
+          </b-collapse>
+        </b-col>
+        </b-row>
       </b-container>
     </div>
     <b-container
@@ -475,5 +490,11 @@
     word-break:break-all;
     overflow: hidden;
     text-overflow:ellipsis;
+  }
+  #expand {
+    width: 30px;
+    height: 30px;
+    margin-left: 70px;
+    color: #ED900E
   }
 </style>
