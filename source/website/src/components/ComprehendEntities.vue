@@ -31,6 +31,12 @@
         </template>
       </b-table>
     </div>
+    <b-button
+      type="button"
+      @click="saveFile()"
+    >
+      Download Data
+    </b-button>
   </div>
 </template>
 
@@ -56,7 +62,8 @@ export default {
       ],
       entities: [],
       isBusy: false,
-      operator: "entities"
+      operator: "entities",
+      elasticsearch_data: []
     }
   },
   computed: {
@@ -97,10 +104,22 @@ export default {
         let result = await response;
         let data = result.hits.hits;
         for (var i = 0, len = data.length; i < len; i++) {
+          this.elasticsearch_data.push(data[i]._source)
           this.entities.push({ "EntityText": data[i]._source.EntityText, "EntityType": data[i]._source.EntityType, "Confidence": data[i]._source.Confidence, "BeginOffset": data[i]._source.BeginOffset, "EndOffset": data[i]._source.EndOffset})
         }
         this.isBusy = false
       }
+    },
+    saveFile() {
+      const elasticsearch_data = JSON.stringify(this.elasticsearch_data);
+      const blob = new Blob([elasticsearch_data], {type: 'text/plain'});
+      const e = document.createEvent('MouseEvents'),
+        a = document.createElement('a');
+      a.download = "data.json";
+      a.href = window.URL.createObjectURL(blob);
+      a.dataset.downloadurl = ['text/json', a.download, a.href].join(':');
+      e.initEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+      a.dispatchEvent(e);
     }
   }
 }

@@ -13,87 +13,94 @@
         <b-col>
           <div>
             <b-row align-h="center">
-              <b-tabs
-                content-class="mt-3"
-                fill
-              >
-                <b-tab
-                  title="ML Vision"
-                  active
-                  @click="currentView = 'LabelObjects'; mlTabs = 0"
+              <div>
+                <b-tabs
+                  content-class="mt-3"
+                  fill
                 >
-                  <b-container fluid>
-                    <b-row>
-                      <div>
-                        <b-tabs
-                          v-model="mlTabs"
-                          content-class="mt-3"
-                          fill
-                        >
-                          <b-tab
-                            title="Objects"
-                            @click="currentView = 'LabelObjects'"
-                          />
-                          <b-tab
-                            title="Celebrities"
-                            @click="currentView = 'Celebrities'"
-                          />
-                          <b-tab
-                            title="Moderation"
-                            @click="currentView = 'ContentModeration'"
-                          />
-                          <b-tab
-                            title="Faces"
-                            @click="currentView = 'FaceDetection'"
-                          />
-                          <b-tab
-                            title="Words"
-                            @click="currentView = 'TextDetection'"
-                          />
-                          <b-tab
-                            v-if="mediaType !== 'image'"
-                            title="Cues"
-                            @click="currentView = 'TechnicalCues'"
-                          />
-                          <b-tab
-                            v-if="mediaType !== 'image'"
-                            title="Shots"
-                            @click="currentView = 'ShotDetection'"
-                          />
-                        </b-tabs>
-                      </div>
-                    </b-row>
-                  </b-container>
-                </b-tab>
-                <b-tab
-                  v-if="mediaType !== 'image'"
-                  title="Speech Recognition"
-                  @click="currentView = 'Transcript'; speechTabs = 0"
-                >
-                  <b-tabs
-                    v-model="speechTabs"
-                    content-class="mt-3"
-                    fill
+                  <b-tab
+                        title="Search"
+                        @click="currentView = 'Search'"
                   >
-                    <b-tab
-                      title="Transcript"
-                      @click="currentView = 'Transcript'"
-                    />
-                    <b-tab
-                      title="Translation"
-                      @click="currentView = 'Translation'"
-                    />
-                    <b-tab
-                      title="KeyPhrases"
-                      @click="currentView = 'KeyPhrases'"
-                    />
-                    <b-tab
-                      title="Entities"
-                      @click="currentView = 'Entities'"
-                    />
-                  </b-tabs>
-                </b-tab>
-              </b-tabs>
+                  </b-tab>
+                  <b-tab
+                    title="ML Vision"
+                    active
+                    @click="currentView = 'LabelObjects'; mlTabs = 0"
+                  >
+                    <b-container fluid>
+                      <b-row>
+                        <div>
+                          <b-tabs
+                            v-model="mlTabs"
+                            content-class="mt-3"
+                            fill
+                          >
+                            <b-tab
+                              title="Objects"
+                              @click="currentView = 'LabelObjects'"
+                            />
+                            <b-tab
+                              title="Celebrities"
+                              @click="currentView = 'Celebrities'"
+                            />
+                            <b-tab
+                              title="Moderation"
+                              @click="currentView = 'ContentModeration'"
+                            />
+                            <b-tab
+                              title="Faces"
+                              @click="currentView = 'FaceDetection'"
+                            />
+                            <b-tab
+                              title="Words"
+                              @click="currentView = 'TextDetection'"
+                            />
+                            <b-tab
+                              v-if="mediaType !== 'image'"
+                              title="Cues"
+                              @click="currentView = 'TechnicalCues'"
+                            />
+                            <b-tab
+                              v-if="mediaType !== 'image'"
+                              title="Shots"
+                              @click="currentView = 'ShotDetection'"
+                            />
+                          </b-tabs>
+                        </div>
+                      </b-row>
+                    </b-container>
+                  </b-tab>
+                  <b-tab
+                    v-if="mediaType !== 'image'"
+                    title="Speech Recognition"
+                    @click="currentView = 'Transcript'; speechTabs = 0"
+                  >
+                    <b-tabs
+                      v-model="speechTabs"
+                      content-class="mt-3"
+                      fill
+                    >
+                      <b-tab
+                        title="Transcript"
+                        @click="currentView = 'Transcript'"
+                      />
+                      <b-tab
+                        title="Translation"
+                        @click="currentView = 'Translation'"
+                      />
+                      <b-tab
+                        title="KeyPhrases"
+                        @click="currentView = 'KeyPhrases'"
+                      />
+                      <b-tab
+                        title="Entities"
+                        @click="currentView = 'Entities'"
+                      />
+                    </b-tabs>
+                  </b-tab>
+                </b-tabs>
+              </div>
             </b-row>
           </div>
           <div>
@@ -167,6 +174,14 @@
       VideoPlayer,
       ImageFeature,
       LineChart,
+      Search: () => ({
+        component: new Promise(function(resolve) {
+          setTimeout(function() {
+            resolve(import('@/components/SearchAsset.vue'));
+        }, 1000);
+        }),
+        loading: Loading
+      }),
       LabelObjects: () => ({
         component: new Promise(function(resolve) {
           setTimeout(function() {
@@ -279,7 +294,9 @@
               type: "video/mp4"
             }
           ]
-        }
+        },
+        searchResults: {},
+        selectedDataView: 'explore'
       }
     },
     computed: {
