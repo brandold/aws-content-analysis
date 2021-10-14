@@ -6,13 +6,23 @@
             placeholder="Enter a keyword"
             @keyup.enter="searchCollection"
           >
-          <b-table striped hover fixed :items="searchResults"></b-table>
+
+          <ul>
+            <li v-for="item in searchResults" :key="item.id">
+              <search-result :data="item"></search-result>
+            </li>
+          </ul>
+          <!-- <b-table striped hover fixed :items="searchResults"></b-table> -->
     </div>
 </template>
 
 <script>
+import SearchResult from '@/components/SearchResult.vue'
 export default {
   name: "Search",
+  components: {
+    SearchResult
+  },
   data() {
     return {
       isBusy: false,
@@ -32,10 +42,28 @@ export default {
       this.isBusy = true
       let apiName = 'contentAnalysisElasticsearch';
       let path = '/_search';
-      let completeQuery = 'AssetId:'+this.$route.params.asset_id + query;
       let apiParams = {
         headers: {'Content-Type': 'application/json'},
-        queryStringParameters: {'q': completeQuery}
+        body: {
+          "query": {
+            "bool": {
+              "must": [
+                {
+                  "query_string": {
+                    "query" : query
+                  }
+                }
+              ],
+              "filter": [
+                {
+                    "match": {
+                    "AssetId": this.$route.params.asset_id
+                    }
+                }
+              ]
+            }
+          }
+        }
       };
       let es_data = [];
       let response = await this.$Amplify.API.post(apiName, path, apiParams);
@@ -54,3 +82,8 @@ export default {
   }
 }
 </script>
+
+
+<style scoped>
+li {list-style-type: none;}
+</style>

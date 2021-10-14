@@ -67,7 +67,7 @@
         </b-col>
         <b-col>
           <b-collapse id="collapse-1">
-            <b-card>Filters</b-card>
+            <!-- <b-card>Filters</b-card> -->
           </b-collapse>
         </b-col>
         </b-row>
