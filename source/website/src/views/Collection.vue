@@ -54,6 +54,11 @@
             >
               Search
             </b-button>
+            <a target="_blank" href="https://github.com/brandold/aws-content-analysis/blob/development/QUERY_HELP.md">
+             <b-icon-question-circle id="queryHelp">
+              >
+            </b-icon-question-circle>
+            </a>
           </b-col>
         </b-row>
         <b-row
@@ -495,6 +500,10 @@
     width: 30px;
     height: 30px;
     margin-left: 70px;
+    color: #ED900E
+  }
+  #queryHelp {
+    margin-left: 10px;
     color: #ED900E
   }
 </style>
