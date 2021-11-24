@@ -61,7 +61,7 @@
             </a>
           </b-col>
         </b-row>
-        <b-row
+        <!-- <b-row
           class="my-1"
           align-v="center"
           align-h="center"
@@ -72,10 +72,10 @@
         </b-col>
         <b-col>
           <b-collapse id="collapse-1">
-            <!-- <b-card>Filters</b-card> -->
+            <b-card>Filters</b-card>
           </b-collapse>
         </b-col>
-        </b-row>
+        </b-row> -->
       </b-container>
     </div>
     <b-container
