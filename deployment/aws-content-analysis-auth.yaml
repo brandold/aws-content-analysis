@@ -228,11 +228,11 @@ Resources:
       Username: !Ref AdminEmail
       UserPoolId: !Ref ContentAnalysisUserPool
 
-  ContentAnalysisDemoAccount:
-    Type: AWS::Cognito::UserPoolUser
-    Properties:
-      Username: demo-user
-      UserPoolId: !Ref ContentAnalysisUserPool
+  # ContentAnalysisDemoAccount:
+  #   Type: AWS::Cognito::UserPoolUser
+  #   Properties:
+  #     Username: demo-user
+  #     UserPoolId: !Ref ContentAnalysisUserPool
 
   # TODO: Need to add S3 put access to dataplane bucket on public/upload/*
   ContentAnalysisAdminRole:
@@ -380,13 +380,13 @@ Resources:
       Username: !Ref AdminEmail
       UserPoolId: !Ref ContentAnalysisUserPool
 
-  AddDemoUserToNoDeleteGroup:
-    DependsOn: ContentAnalysisDemoAccount
-    Type: AWS::Cognito::UserPoolUserToGroupAttachment
-    Properties:
-      GroupName: !Ref ContentAnalysisNoDeleteGroup
-      Username: demo-user
-      UserPoolId: !Ref ContentAnalysisUserPool
+  # AddDemoUserToNoDeleteGroup:
+  #   DependsOn: ContentAnalysisDemoAccount
+  #   Type: AWS::Cognito::UserPoolUserToGroupAttachment
+  #   Properties:
+  #     GroupName: !Ref ContentAnalysisNoDeleteGroup
+  #     Username: demo-user
+  #     UserPoolId: !Ref ContentAnalysisUserPool
 
 Outputs:
   AdminRoleArn:
