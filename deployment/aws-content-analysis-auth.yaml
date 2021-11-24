@@ -211,6 +211,14 @@ Resources:
       UserPoolId: !Ref ContentAnalysisUserPool
       GroupName: !Sub "${AWS::StackName}-Admins"
 
+  ContentAnalysisNoDeleteGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      Description: 'User group for AWS Content Analysis No Delete users'
+      RoleArn: !GetAtt ContentAnalysisNoDeleteRole.Arn
+      UserPoolId: !Ref ContentAnalysisUserPool
+      GroupName: !Sub "${AWS::StackName}-NoDelete"
+
   ContentAnalysisAdminAccount:
     Type: AWS::Cognito::UserPoolUser
     Properties:
@@ -218,6 +226,12 @@ Resources:
         - EMAIL
       UserAttributes: [{"Name": "email", "Value": !Ref AdminEmail}]
       Username: !Ref AdminEmail
+      UserPoolId: !Ref ContentAnalysisUserPool
+
+  ContentAnalysisDemoAccount:
+    Type: AWS::Cognito::UserPoolUser
+    Properties:
+      Username: demo-user
       UserPoolId: !Ref ContentAnalysisUserPool
 
   # TODO: Need to add S3 put access to dataplane bucket on public/upload/*
@@ -286,12 +300,92 @@ Resources:
               dataplanebucket: !Ref DataplaneBucket
             }
 
+  ContentAnalysisNoDeleteRole:
+      Type: "AWS::IAM::Role"
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: "Allow"
+              Principal:
+                Federated: "cognito-identity.amazonaws.com"
+              Action:
+                - "sts:AssumeRoleWithWebIdentity"
+              Condition:
+                StringEquals:
+                  "cognito-identity.amazonaws.com:aud": !Ref ContentAnalysisIdentityPool
+                "ForAnyValue:StringEquals":
+                  "cognito-identity.amazonaws.com:amr": authenticated
+        Policies:
+          - PolicyName:  !Sub "${AWS::StackName}-NoDeletePolicy"
+            PolicyDocument: !Sub
+              - |-
+                {
+                  "Version": "2012-10-17",
+                  "Statement": [
+                    {
+                      "Action": [
+                        "execute-api:Invoke"
+                      ],
+                      "Effect": "Deny",
+                      "Resource": ["arn:aws:execute-api:${region}:${account}:${dataapi}/*/DELETE/*", "arn:aws:execute-api:${region}:${account}:${wfapi}/*/DELETE/*"]
+                    },
+                    {
+                      "Action": [
+                        "execute-api:Invoke"
+                      ],
+                      "Effect": "Allow",
+                      "Resource": ["arn:aws:execute-api:${region}:${account}:${wfapi}/*/GET/*", "arn:aws:execute-api:${region}:${account}:${wfapi}/*/POST/*", "arn:aws:execute-api:${region}:${account}:${wfapi}/*/PUT/*", "arn:aws:execute-api:${region}:${account}:${dataapi}/*/GET/*", "arn:aws:execute-api:${region}:${account}:${dataapi}/*/POST/*"]
+                    },
+                    {
+                      "Action": [
+                        "s3:PutObject"
+                      ],
+                      "Effect": "Allow",
+                      "Resource": [
+                        "arn:aws:s3:::${dataplanebucket}/public/*"
+                      ]
+                    },
+                    {
+                      "Action": [
+                        "s3:ListBucket"
+                      ],
+                      "Effect": "Allow",
+                      "Resource": "arn:aws:s3:::${dataplanebucket}"
+                    },
+                    {
+                      "Action": [
+                        "es:ESHttpPost",
+                        "es:ESHttpGet"
+                      ],
+                      "Effect": "Allow",
+                      "Resource": "${searchdomain}/*"
+                    }
+                  ]
+                }
+              - {
+                region: !Ref "AWS::Region",
+                account: !Ref "AWS::AccountId",
+                wfapi: !Ref WorkflowApiId,
+                dataapi: !Ref DataplaneApiId,
+                searchdomain: !Ref SearchDomainArn,
+                dataplanebucket: !Ref DataplaneBucket
+              }
+
   AddAdminUserToAdminGroup:
     DependsOn: ContentAnalysisAdminAccount
     Type: AWS::Cognito::UserPoolUserToGroupAttachment
     Properties:
       GroupName: !Ref ContentAnalysisAdminGroup
       Username: !Ref AdminEmail
+      UserPoolId: !Ref ContentAnalysisUserPool
+
+  AddDemoUserToNoDeleteGroup:
+    DependsOn: ContentAnalysisDemoAccount
+    Type: AWS::Cognito::UserPoolUserToGroupAttachment
+    Properties:
+      GroupName: !Ref ContentAnalysisNoDeleteGroup
+      Username: demo-user
       UserPoolId: !Ref ContentAnalysisUserPool
 
 Outputs:
